@@ -411,7 +411,7 @@ KMOD_EXPORT int kmod_module_new_from_path(struct kmod_ctx *ctx,
 	if (ctx == NULL || path == NULL || mod == NULL)
 		return -ENOENT;
 
-	abspath = path_make_absolute_cwd(path);
+	abspath = privkm_path_make_absolute_cwd(path);
 	if (abspath == NULL) {
 		DBG(ctx, "no absolute path for %s\n", path);
 		return -ENOMEM;

@@ -23,6 +23,7 @@
 #include <getopt.h>
 #include <string.h>
 #include <libkmod.h>
+#include "libkmod-util.h"
 #include "kmod.h"
 
 static const char options_s[] = "+hV";
@@ -47,6 +48,17 @@ static const struct kmod_cmd *kmod_compat_cmds[] = {
 	&kmod_cmd_compat_modinfo,
 	&kmod_cmd_compat_modprobe,
 	&kmod_cmd_compat_depmod,
+};
+
+const struct kmod_ext kmod_exts[] = {
+	{".ko", sizeof(".ko") - 1},
+#ifdef ENABLE_ZLIB
+	{".ko.gz", sizeof(".ko.gz") - 1},
+#endif
+#ifdef ENABLE_XZ
+	{".ko.xz", sizeof(".ko.xz") - 1},
+#endif
+	{ }
 };
 
 static int kmod_help(int argc, char *argv[])
@@ -154,6 +166,20 @@ static int handle_kmod_compat_commands(int argc, char *argv[])
 	}
 
 	return -ENOENT;
+}
+
+bool path_ends_with_kmod_ext(const char *path, size_t len)
+{
+	const struct kmod_ext *eitr;
+
+	for (eitr = kmod_exts; eitr->ext != NULL; eitr++) {
+		if (len <= eitr->len)
+			continue;
+		if (streq(path + len - eitr->len, eitr->ext))
+			return true;
+	}
+
+	return false;
 }
 
 int main(int argc, char *argv[])

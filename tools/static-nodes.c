@@ -226,7 +226,7 @@ static int do_static_nodes(int argc, char *argv[])
 		goto finish;
 	}
 
-	r = mkdir_parents(output, 0755);
+	r = privkm_mkdir_parents(output, 0755);
 	if (r < 0) {
 		fprintf(stderr, "Error: could not create parent directory for %s - %m.\n", output);
 		ret = EXIT_FAILURE;

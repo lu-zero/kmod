@@ -37,4 +37,12 @@ extern const struct kmod_cmd kmod_cmd_compat_depmod;
 extern const struct kmod_cmd kmod_cmd_list;
 extern const struct kmod_cmd kmod_cmd_static_nodes;
 
+extern const struct kmod_ext {
+	const char *ext;
+	size_t len;
+} kmod_exts[];
+#define KMOD_EXT_UNC 0
+
+bool path_ends_with_kmod_ext(const char *path, size_t len) __attribute__((nonnull(1)));
+
 #include "log.h"

@@ -92,79 +92,6 @@ char *privkm_getline_wrapped(FILE *fp, unsigned int *linenum)
 	}
 }
 
-inline int alias_normalize(const char *alias, char buf[PATH_MAX], size_t *len)
-{
-	size_t s;
-
-	for (s = 0; s < PATH_MAX - 1; s++) {
-		const char c = alias[s];
-		switch (c) {
-		case '-':
-			buf[s] = '_';
-			break;
-		case ']':
-			return -EINVAL;
-		case '[':
-			while (alias[s] != ']' && alias[s] != '\0') {
-				buf[s] = alias[s];
-				s++;
-			}
-
-			if (alias[s] != ']')
-				return -EINVAL;
-
-			buf[s] = alias[s];
-			break;
-		case '\0':
-			goto finish;
-		default:
-			buf[s] = c;
-		}
-	}
-
-finish:
-	buf[s] = '\0';
-
-	if (len)
-		*len = s;
-
-	return 0;
-}
-
-inline char *modname_normalize(const char *modname, char buf[PATH_MAX],
-								size_t *len)
-{
-	size_t s;
-
-	for (s = 0; s < PATH_MAX - 1; s++) {
-		const char c = modname[s];
-		if (c == '-')
-			buf[s] = '_';
-		else if (c == '\0' || c == '.')
-			break;
-		else
-			buf[s] = c;
-	}
-
-	buf[s] = '\0';
-
-	if (len)
-		*len = s;
-
-	return buf;
-}
-
-char *path_to_modname(const char *path, char buf[PATH_MAX], size_t *len)
-{
-	char *modname;
-
-	modname = basename(path);
-	if (modname == NULL || modname[0] == '\0')
-		return NULL;
-
-	return modname_normalize(modname, buf, len);
-}
-
 ssize_t privkm_read_str_safe(int fd, char *buf, size_t buflen)
 {
 	size_t todo = buflen - 1;
@@ -216,14 +143,14 @@ ssize_t privkm_write_str_safe(int fd, const char *buf, size_t buflen)
 	return done;
 }
 
-bool path_is_absolute(const char *p)
+static inline bool path_is_absolute(const char *p)
 {
 	assert(p != NULL);
 
 	return p[0] == '/';
 }
 
-char *path_make_absolute_cwd(const char *p)
+char *privkm_path_make_absolute_cwd(const char *p)
 {
 	char *cwd, *r;
 	size_t plen;
@@ -262,7 +189,7 @@ static inline int is_dir(const char *path)
 	return -errno;
 }
 
-int mkdir_p(const char *path, int len, mode_t mode)
+int privkm_mkdir_p(const char *path, int len, mode_t mode)
 {
 	char *start, *end;
 
@@ -312,7 +239,7 @@ int mkdir_p(const char *path, int len, mode_t mode)
 	return 0;
 }
 
-int mkdir_parents(const char *path, mode_t mode)
+int privkm_mkdir_parents(const char *path, mode_t mode)
 {
 	char *end = strrchr(path, '/');
 
@@ -320,47 +247,5 @@ int mkdir_parents(const char *path, mode_t mode)
 	if (end == NULL)
 		return 0;
 
-	return mkdir_p(path, end - path, mode);
-}
-
-const struct kmod_ext kmod_exts[] = {
-	{".ko", sizeof(".ko") - 1},
-#ifdef ENABLE_ZLIB
-	{".ko.gz", sizeof(".ko.gz") - 1},
-#endif
-#ifdef ENABLE_XZ
-	{".ko.xz", sizeof(".ko.xz") - 1},
-#endif
-	{ }
-};
-
-bool path_ends_with_kmod_ext(const char *path, size_t len)
-{
-	const struct kmod_ext *eitr;
-
-	for (eitr = kmod_exts; eitr->ext != NULL; eitr++) {
-		if (len <= eitr->len)
-			continue;
-		if (streq(path + len - eitr->len, eitr->ext))
-			return true;
-	}
-
-	return false;
-}
-
-#define USEC_PER_SEC  1000000ULL
-#define NSEC_PER_USEC 1000ULL
-unsigned long long ts_usec(const struct timespec *ts)
-{
-	return (unsigned long long) ts->tv_sec * USEC_PER_SEC +
-	       (unsigned long long) ts->tv_nsec / NSEC_PER_USEC;
-}
-
-unsigned long long stat_mstamp(const struct stat *st)
-{
-#ifdef HAVE_STRUCT_STAT_ST_MTIM
-	return ts_usec(&st->st_mtim);
-#else
-	return (unsigned long long) st->st_mtime;
-#endif
+	return privkm_mkdir_p(path, end - path, mode);
 }

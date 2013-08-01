@@ -2488,7 +2488,7 @@ static int do_depmod(int argc, char *argv[])
 			maybe_all = 1;
 			break;
 		case 'b':
-			root = path_make_absolute_cwd(optarg);
+			root = privkm_path_make_absolute_cwd(optarg);
 			break;
 		case 'C': {
 			size_t bytes = sizeof(char *) * (n_config_paths + 2);
