@@ -683,7 +683,7 @@ static int cfg_file_parse(struct cfg *cfg, const char *filename)
 		return err;
 	}
 
-	while ((line = getline_wrapped(fp, &linenum)) != NULL) {
+	while ((line = privkm_getline_wrapped(fp, &linenum)) != NULL) {
 		char *cmd, *saveptr;
 
 		if (line[0] == '\0' || line[0] == '#')

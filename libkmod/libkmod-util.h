@@ -6,17 +6,23 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 
-
-char *getline_wrapped(FILE *fp, unsigned int *linenum) __attribute__((nonnull(1)));
+char *privkm_getline_wrapped(FILE *fp, unsigned int *linenum) __attribute__((nonnull(1)));
 #define streq(a, b) (strcmp((a), (b)) == 0)
 #define strstartswith(a, b) (strncmp(a, b, strlen(b)) == 0)
-void *memdup(const void *p, size_t n) __attribute__((nonnull(1)));
+static inline void *memdup(const void *p, size_t n) 
+{
+	void *r = malloc(n);
 
-ssize_t read_str_safe(int fd, char *buf, size_t buflen) _must_check_ __attribute__((nonnull(2)));
-ssize_t write_str_safe(int fd, const char *buf, size_t buflen) __attribute__((nonnull(2)));
-int read_str_long(int fd, long *value, int base) _must_check_ __attribute__((nonnull(2)));
-int read_str_ulong(int fd, unsigned long *value, int base) _must_check_ __attribute__((nonnull(2)));
+	if (r == NULL)
+		return NULL;
+
+	return memcpy(r, p, n);
+}
+
+ssize_t privkm_read_str_safe(int fd, char *buf, size_t buflen) _must_check_ __attribute__((nonnull(2)));
+ssize_t privkm_write_str_safe(int fd, const char *buf, size_t buflen) __attribute__((nonnull(2)));
 char *strchr_replace(char *s, int c, char r);
 bool path_is_absolute(const char *p) _must_check_ __attribute__((nonnull(1)));
 char *path_make_absolute_cwd(const char *p) _must_check_ __attribute__((nonnull(1)));

@@ -406,10 +406,10 @@ static void index_dump_node(struct index_node_f *node, struct buffer *buf,
 	pushed = buf_pushchars(buf, node->prefix);
 
 	for (v = node->values; v != NULL; v = v->next) {
-		write_str_safe(fd, buf->bytes, buf->used);
-		write_str_safe(fd, " ", 1);
-		write_str_safe(fd, v->value, strlen(v->value));
-		write_str_safe(fd, "\n", 1);
+		privkm_write_str_safe(fd, buf->bytes, buf->used);
+		privkm_write_str_safe(fd, " ", 1);
+		privkm_write_str_safe(fd, v->value, strlen(v->value));
+		privkm_write_str_safe(fd, "\n", 1);
 	}
 
 	for (ch = node->first; ch <= node->last; ch++) {
@@ -879,10 +879,10 @@ static void index_mm_dump_node(struct index_mm_node *node, struct buffer *buf,
 	itr = node->values.values;
 	itr_end = itr + node->values.len;
 	for (; itr < itr_end; itr++) {
-		write_str_safe(fd, buf->bytes, buf->used);
-		write_str_safe(fd, " ", 1);
-		write_str_safe(fd, itr->value, itr->len);
-		write_str_safe(fd, "\n", 1);
+		privkm_write_str_safe(fd, buf->bytes, buf->used);
+		privkm_write_str_safe(fd, " ", 1);
+		privkm_write_str_safe(fd, itr->value, itr->len);
+		privkm_write_str_safe(fd, "\n", 1);
 	}
 
 	for (ch = node->first; ch <= node->last; ch++) {

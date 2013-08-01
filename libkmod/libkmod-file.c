@@ -312,7 +312,7 @@ struct kmod_file *kmod_file_open(const struct kmod_ctx *ctx,
 			err = -errno;
 			goto error;
 		}
-		sz = read_str_safe(file->fd, buf, magic_size_max + 1);
+		sz = privkm_read_str_safe(file->fd, buf, magic_size_max + 1);
 		lseek(file->fd, 0, SEEK_SET);
 		if (sz != (ssize_t)magic_size_max) {
 			if (sz < 0)

@@ -95,6 +95,44 @@ struct kmod_module {
 	bool builtin : 1;
 };
 
+static int read_str_long(int fd, long *value, int base)
+{
+	char buf[32], *end;
+	long v;
+	int err;
+
+	*value = 0;
+	err = privkm_read_str_safe(fd, buf, sizeof(buf));
+	if (err < 0)
+		return err;
+	errno = 0;
+	v = strtol(buf, &end, base);
+	if (end == buf || !isspace(*end))
+		return -EINVAL;
+
+	*value = v;
+	return 0;
+}
+
+static int read_str_ulong(int fd, unsigned long *value, int base)
+{
+	char buf[32], *end;
+	long v;
+	int err;
+
+	*value = 0;
+	err = privkm_read_str_safe(fd, buf, sizeof(buf));
+	if (err < 0)
+		return err;
+	errno = 0;
+	v = strtoul(buf, &end, base);
+	if (end == buf || !isspace(*end))
+		return -EINVAL;
+	*value = v;
+	return 0;
+}
+
+
 static inline const char *path_join(const char *path, size_t prefixlen,
 							char buf[PATH_MAX])
 {
@@ -1718,7 +1756,7 @@ KMOD_EXPORT int kmod_module_get_initstate(const struct kmod_module *mod)
 		return err;
 	}
 
-	err = read_str_safe(fd, buf, sizeof(buf));
+	err = privkm_read_str_safe(fd, buf, sizeof(buf));
 	close(fd);
 	if (err < 0) {
 		ERR(mod->ctx, "could not read from '%s': %s\n",

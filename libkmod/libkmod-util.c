@@ -43,7 +43,7 @@
  * If linenum is not NULL, it is incremented by the number of physical lines
  * which have been read.
  */
-char *getline_wrapped(FILE *fp, unsigned int *linenum)
+char *privkm_getline_wrapped(FILE *fp, unsigned int *linenum)
 {
 	int size = 256;
 	int i = 0;
@@ -165,17 +165,7 @@ char *path_to_modname(const char *path, char buf[PATH_MAX], size_t *len)
 	return modname_normalize(modname, buf, len);
 }
 
-inline void *memdup(const void *p, size_t n)
-{
-	void *r = malloc(n);
-
-	if (r == NULL)
-		return NULL;
-
-	return memcpy(r, p, n);
-}
-
-ssize_t read_str_safe(int fd, char *buf, size_t buflen)
+ssize_t privkm_read_str_safe(int fd, char *buf, size_t buflen)
 {
 	size_t todo = buflen - 1;
 	size_t done = 0;
@@ -201,7 +191,7 @@ ssize_t read_str_safe(int fd, char *buf, size_t buflen)
 	return done;
 }
 
-ssize_t write_str_safe(int fd, const char *buf, size_t buflen)
+ssize_t privkm_write_str_safe(int fd, const char *buf, size_t buflen)
 {
 	size_t todo = buflen;
 	size_t done = 0;
@@ -224,43 +214,6 @@ ssize_t write_str_safe(int fd, const char *buf, size_t buflen)
 	} while (todo > 0);
 
 	return done;
-}
-
-int read_str_long(int fd, long *value, int base)
-{
-	char buf[32], *end;
-	long v;
-	int err;
-
-	*value = 0;
-	err = read_str_safe(fd, buf, sizeof(buf));
-	if (err < 0)
-		return err;
-	errno = 0;
-	v = strtol(buf, &end, base);
-	if (end == buf || !isspace(*end))
-		return -EINVAL;
-
-	*value = v;
-	return 0;
-}
-
-int read_str_ulong(int fd, unsigned long *value, int base)
-{
-	char buf[32], *end;
-	long v;
-	int err;
-
-	*value = 0;
-	err = read_str_safe(fd, buf, sizeof(buf));
-	if (err < 0)
-		return err;
-	errno = 0;
-	v = strtoul(buf, &end, base);
-	if (end == buf || !isspace(*end))
-		return -EINVAL;
-	*value = v;
-	return 0;
 }
 
 char *strchr_replace(char *s, int c, char r)
