@@ -56,6 +56,17 @@ struct kmod_softdep {
 	unsigned int n_post;
 };
 
+static char *strchr_replace(char *s, int c, char r)
+{
+	char *p;
+
+	for (p = s; *p != '\0'; p++)
+		if (*p == c)
+			*p = r;
+
+	return s;
+}
+
 const char *kmod_blacklist_get_modname(const struct kmod_list *l)
 {
 	return l->data;

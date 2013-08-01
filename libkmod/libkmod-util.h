@@ -23,7 +23,6 @@ static inline void *memdup(const void *p, size_t n)
 
 ssize_t privkm_read_str_safe(int fd, char *buf, size_t buflen) _must_check_ __attribute__((nonnull(2)));
 ssize_t privkm_write_str_safe(int fd, const char *buf, size_t buflen) __attribute__((nonnull(2)));
-char *strchr_replace(char *s, int c, char r);
 bool path_is_absolute(const char *p) _must_check_ __attribute__((nonnull(1)));
 char *path_make_absolute_cwd(const char *p) _must_check_ __attribute__((nonnull(1)));
 int mkdir_p(const char *path, int len, mode_t mode);

@@ -216,17 +216,6 @@ ssize_t privkm_write_str_safe(int fd, const char *buf, size_t buflen)
 	return done;
 }
 
-char *strchr_replace(char *s, int c, char r)
-{
-	char *p;
-
-	for (p = s; *p != '\0'; p++)
-		if (*p == c)
-			*p = r;
-
-	return s;
-}
-
 bool path_is_absolute(const char *p)
 {
 	assert(p != NULL);
